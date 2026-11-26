@@ -3,7 +3,7 @@ import { rpc } from '@/lib/db';
 import { getSession } from '@/lib/session';
 import Countdown from '@/components/Countdown';
 export const dynamic = 'force-dynamic';
-const STATUS: Record<string, string> = { upload: 'Envoi des openings ouvert', live: 'Tournoi en cours' };
+const STATUS: Record<string, string> = { upload: 'Inscriptions et envois ouverts', live: 'Tournoi en cours' };
 export default async function Home() {
   const s = await getSession();
   if (!s) redirect('/login');
@@ -15,7 +15,7 @@ export default async function Home() {
         <h1>{t.name}</h1>
         <p className="hello">{STATUS[t.status] ?? t.status}{t.jury_enabled ? ' · Jury activé' : ''}</p>
         <p className="muted">Début le {new Date(t.starts_at).toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'short' })}</p>
-        <Countdown to={new Date(t.starts_at).toISOString()} />
+        <Countdown to={new Date(t.starts_at).toISOString()} status={t.status as 'upload' | 'live'} />
       </>) : (<>
         <h1>Pas de tournoi pour l'instant</h1>
         <p className="muted">L'administrateur annoncera le prochain ici.</p>

@@ -18,7 +18,7 @@ function Side({ s, letter, base, picked, dim, canVote, busy, onVote }: { s: S; l
   return (
     <div className={`side ${letter === 'A' ? 'a' : 'b'}${picked ? ' picked' : ''}${dim ? ' dim' : ''}`}>
       <div className="side-head"><b>Opening {letter}</b><span className="muted small">{mmss(s.duration_sec)}</span></div>
-      <audio controls preload="none" src={`${base}/${s.audio_key}`} />
+      <audio controls preload="metadata" src={`${base}/${s.audio_key}`} />
       {s.mine
         ? <p className="note">C'est ton opening.</p>
         : <button type="button" onClick={onVote} disabled={!canVote || busy} aria-pressed={picked}>{picked ? 'Ton vote ✓' : `Voter pour ${letter}`}</button>}

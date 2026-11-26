@@ -2,7 +2,7 @@
 import './admin.css';
 import './duel.css';
 import { useCallback, useEffect, useState } from 'react';
-type I = { tournament: { name: string; jury_enabled?: boolean } | null; finished?: boolean; round?: number | null; next_round?: number; next_opening?: number; matches?: number; open?: number; votes?: number; jury_votes?: number; jury_required?: number; closes_at?: string | null; participants?: number; complete_participants?: number; jurors?: number; openings?: Record<string, number> };
+type I = { tournament: { name: string; jury_enabled?: boolean } | null; finished?: boolean; round?: number | null; next_round?: number; next_opening?: number; matches?: number; open?: number; votes?: number; jury_votes?: number; jury_required?: number; closes_at?: string | null; participants?: number; complete_participants?: number; ready_participants?: number; jurors?: number; openings?: Record<string, number> };
 export default function AdminRounds() {
   const [i, setI] = useState<I | null>(null);
   const [minutes, setMinutes] = useState(15);
@@ -30,7 +30,7 @@ export default function AdminRounds() {
       <h2>Combats</h2>
       {msg && <p className="msg" role="status">{msg}</p>}
       {!i && <p className="muted">Chargement…</p>}
-      {i && <div className="stat"><b>{i.tournament ? 'Préparation du tournoi en cours' : 'Préparation du prochain tournoi'}</b>{!i.tournament && <p className="muted small">Aucun tournoi n’est actuellement ouvert aux envois. Les compteurs d’openings se rempliront lorsque tu passeras un nouveau tournoi au statut « Envoi des openings ».</p>}<p className="muted small">Participants inscrits : {i.participants ?? 0} · Avec 3 openings : {i.complete_participants ?? 0}</p><p className="muted small">Openings reçus : n°1 {i.openings?.['1'] ?? 0} · n°2 {i.openings?.['2'] ?? 0} · n°3 {i.openings?.['3'] ?? 0}</p><p className="muted small">Jurés inscrits : {i.jurors ?? 0} · un nombre impair est obligatoire.</p>{![2, 4, 8, 16, 32].includes(i.participants ?? 0) && <p className="err small">Effectif invalide : il faut 2, 4, 8, 16 ou 32 participants.</p>}{(i.complete_participants ?? 0) < (i.participants ?? 0) && <p className="err small">Il manque les trois openings à {Math.max(0, (i.participants ?? 0) - (i.complete_participants ?? 0))} participant(s).</p>}{(i.jurors ?? 0) < 1 || (i.jurors ?? 0) % 2 === 0 ? <p className="err small">Le jury doit compter 1, 3, 5, 7… jurés actifs.</p> : <p className="muted small">Effectif du jury valide.</p>}</div>}
+      {i && <div className="stat"><b>{i.tournament ? 'Préparation du tournoi en cours' : 'Préparation du prochain tournoi'}</b>{!i.tournament && <p className="muted small">Aucun tournoi n’est actuellement ouvert aux envois. Les compteurs d’openings se rempliront lorsque tu passeras un nouveau tournoi au statut « Envoi des openings ».</p>}<p className="muted small">Participants inscrits : {i.participants ?? 0} · Avec au moins 1 opening : {i.ready_participants ?? 0} · Avec 3 openings : {i.complete_participants ?? 0}</p><p className="muted small">Openings reçus : n°1 {i.openings?.['1'] ?? 0} · n°2 {i.openings?.['2'] ?? 0} · n°3 {i.openings?.['3'] ?? 0}</p><p className="muted small">Jurés inscrits : {i.jurors ?? 0} · un nombre impair est obligatoire.</p>{![2, 4, 8, 16, 32].includes(i.participants ?? 0) && <p className="err small">Effectif invalide : il faut 2, 4, 8, 16 ou 32 participants.</p>}{(i.ready_participants ?? 0) < (i.participants ?? 0) && <p className="err small">Chaque participant doit envoyer au moins un opening. Il en manque à {Math.max(0, (i.participants ?? 0) - (i.ready_participants ?? 0))} participant(s).</p>}{(i.jurors ?? 0) < 1 || (i.jurors ?? 0) % 2 === 0 ? <p className="err small">Le jury doit compter 1, 3, 5, 7… jurés actifs.</p> : <p className="muted small">Effectif du jury valide.</p>}</div>}
       {i && !i.tournament && <p className="muted">{i.finished ? 'Le tournoi est terminé. ' : ''}Passe un tournoi au statut « En cours » pour lancer les combats.</p>}
       {i?.tournament && (i.open ?? 0) > 0 && (
         <div className="stat">
@@ -48,7 +48,7 @@ export default function AdminRounds() {
             {[5, 15, 30, 60].map(m => <button key={m} type="button" className={minutes === m ? 'on' : ''} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m} min</button>)}
           </div>
           <button type="button" disabled={busy} onClick={() => go({ action: 'start', minutes }, j => `Tour ${j.round} lancé : ${j.matches} combats.`)}>{busy ? '…' : `Lancer le tour ${i.next_round}`}</button>
-          <p className="muted small">Aucun gagnant d’office : seuls les tableaux complets de 2, 4, 8, 16 ou 32 participants sont acceptés. Chaque participant actif doit avoir envoyé ses trois openings. Le jury doit être activé et compter un nombre impair de membres inscrits.</p>
+          <p className="muted small">Chaque participant doit envoyer au moins un opening. Si un participant n’a pas envoyé l’opening correspondant au duel, son adversaire gagne automatiquement par forfait. Le tableau doit compter 2, 4, 8, 16 ou 32 participants et le jury doit compter un nombre impair de membres inscrits.</p>
         </div>
       )}
       {i?.tournament && (

@@ -2,7 +2,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './admin.css';
 type Participant = { pseudo: string; openings_count: number; opening_1: boolean; opening_2: boolean; opening_3: boolean };
-type JuryMember = { pseudo: string; has_voted: boolean };\ntype Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number; jury_members: JuryMember[] };
+type JuryMember = { pseudo: string; has_voted: boolean };
+type Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number; jury_members: JuryMember[] };
 export default function AdminOpeningProgress() {
   const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState('all');

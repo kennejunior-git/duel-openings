@@ -5,5 +5,5 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   const s = await getSession();
   if (!s) redirect('/login');
-  return <section className="page"><h1>Duel</h1><DuelBoard /></section>;
+  return <section className="page"><h1>Duel</h1><DuelBoard canVote={s.role !== 'admin'} /></section>;
 }

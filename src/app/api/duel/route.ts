@@ -16,5 +16,5 @@ export async function POST(req: Request) {
     }
     await rpc('app_vote', { p_code_id: s.id, p_match_id: String(b.match_id), p_entry_id: String(b.entry_id) });
     return Response.json({ ok: true });
-  } catch { return Response.json({ error: "Vote refusé : le combat est fermé ou ton opening y participe." }, { status: 400 }); }
+  } catch { return Response.json({ error: b.action === 'jury_tiebreak' ? "Vote du jury refusé : seuls les jurés inscrits peuvent départager une égalité après la fin du temps de vote." : "Vote refusé : le combat est fermé, ton opening y participe ou ton rôle ne permet pas de voter." }, { status: 400 }); }
 }

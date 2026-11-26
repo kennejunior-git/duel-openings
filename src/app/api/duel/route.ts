@@ -10,6 +10,10 @@ export async function POST(req: Request) {
   const s = await getSession(); if (!s) return Response.json({}, { status: 401 });
   const b = await req.json();
   try {
+    if (b.action === 'jury_tiebreak') {
+      await rpc('app_jury_tiebreak', { p_code_id: s.id, p_match_id: String(b.match_id), p_entry_id: String(b.entry_id) });
+      return Response.json({ ok: true });
+    }
     await rpc('app_vote', { p_code_id: s.id, p_match_id: String(b.match_id), p_entry_id: String(b.entry_id) });
     return Response.json({ ok: true });
   } catch { return Response.json({ error: "Vote refusé : le combat est fermé ou ton opening y participe." }, { status: 400 }); }

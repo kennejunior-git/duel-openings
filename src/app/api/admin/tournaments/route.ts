@@ -17,6 +17,8 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   const id = await adminId(); if (!id) return no();
   const { id: tid } = await req.json();
-  await rpc('app_delete_tournament', { p_admin_id: id, p_id: tid });
-  return Response.json({ ok: true });
+  try {
+    await rpc('app_delete_tournament', { p_admin_id: id, p_id: tid });
+    return Response.json({ ok: true });
+  } catch { return Response.json({ error: 'Ce tournoi existe peut-être déjà supprimé.' }, { status: 404 }); }
 }

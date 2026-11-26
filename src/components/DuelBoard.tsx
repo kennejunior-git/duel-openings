@@ -13,9 +13,9 @@ function Left({ to }: { to: string }) {
   const s = Math.floor(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, sec = s % 60;
   return <span>Fin dans {h > 0 ? `${h} h ${String(m).padStart(2, '0')} min` : `${m} min ${String(sec).padStart(2, '0')} s`}</span>;
 }
-function Side({ s, letter, base, picked, pending, dim, canVote, busy, onChoose, onLike }: {
+function Side({ s, letter, base, picked, pending, dim, canVote, canLike, busy, onChoose, onLike }: {
   s: S; letter: 'A' | 'B'; base: string; picked: boolean; pending: boolean; dim: boolean;
-  canVote: boolean; busy: boolean; onChoose: () => void; onLike: () => void;
+  canVote: boolean; canLike: boolean; busy: boolean; onChoose: () => void; onLike: () => void;
 }) {
   return (
     <article className={`side ${letter === 'A' ? 'a' : 'b'}${picked ? ' picked' : ''}${pending ? ' pending' : ''}${dim ? ' dim' : ''}`}>
@@ -23,7 +23,7 @@ function Side({ s, letter, base, picked, pending, dim, canVote, busy, onChoose, 
       <audio controls preload="metadata" src={`${base}/${s.audio_key}`} aria-label={`Écouter l'opening ${letter}`} />
       <div className="side-actions">
         {s.mine ? <span className="note">Ton opening</span> : <button type="button" className="choose-button" onClick={onChoose} disabled={!canVote || busy} aria-pressed={pending}>{pending ? 'Sélectionné ✓' : picked ? 'Ton vote actuel' : `Choisir ${letter}`}</button>}
-        {!s.mine && <button type="button" className={`like-button${s.liked ? ' liked' : ''}`} onClick={onLike} disabled={busy} aria-pressed={!!s.liked} aria-label={s.liked ? 'Retirer le like' : 'Aimer cet opening'}>♥ <span>{s.likes ?? 0}</span></button>}
+        {!s.mine && <button type="button" className={`like-button${s.liked ? ' liked' : ''}`} onClick={onLike} disabled={busy || !canLike} aria-pressed={!!s.liked} aria-label={s.liked ? 'Retirer le like' : 'Aimer cet opening'}>♥ <span>{s.likes ?? 0}</span></button>}
       </div>
     </article>
   );
@@ -81,7 +81,7 @@ export default function DuelBoard({ canVote = true }: { canVote?: boolean }) {
             {!canVote && <p className="note">Mode administrateur : consultation uniquement, aucun vote ni like.</p>}
             <div className="sides">
               {sides.map(([L, s]) => (
-                <Side key={L} s={s} letter={L} base={d.publicBase} picked={m.my_vote === s.entry_id} pending={selected === s.entry_id} dim={!!selected && selected !== s.entry_id} canVote={votingOpen} busy={busy} onChoose={() => setPending({ matchId: m.id, entryId: s.entry_id })} onLike={() => like(s.entry_id)} />
+                <Side key={L} s={s} letter={L} base={d.publicBase} picked={m.my_vote === s.entry_id} pending={selected === s.entry_id} dim={!!selected && selected !== s.entry_id} canVote={votingOpen} canLike={canVote} busy={busy} onChoose={() => setPending({ matchId: m.id, entryId: s.entry_id })} onLike={() => like(s.entry_id)} />
               ))}
             </div>
             {votingOpen && selected && (

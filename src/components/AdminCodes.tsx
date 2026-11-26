@@ -2,8 +2,8 @@
 import './admin.css';
 import { useCallback, useEffect, useState } from 'react';
 type C = { id: string; code: string; role: string; pseudo: string | null; active: boolean };
-const ROLES = [['participant', 'Participant'], ['voter', 'Votant'], ['jury', 'Jury']] as const;
-const FILTERS = [['all', 'Tous'], ['participant', 'Participants'], ['voter', 'Votants'], ['jury', 'Jurys']] as const;
+const ROLES = [['participant', 'Participant'], ['voter', 'Votant'], ['jury', 'Jury'], ['admin', 'Admin']] as const;
+const FILTERS = [['all', 'Tous'], ['participant', 'Participants'], ['voter', 'Votants'], ['jury', 'Jurys'], ['admin', 'Admins']] as const;
 const LABEL: Record<string, string> = { admin: 'Admin', participant: 'Participant', voter: 'Votant', jury: 'Jury' };
 export default function AdminCodes() {
   const [list, setList] = useState<C[]>([]);

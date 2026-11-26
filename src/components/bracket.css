@@ -15,7 +15,7 @@
 .champion-crown{display:block;font-size:2rem;margin-bottom:.25rem}.champion-card h2{font:800 1.65rem var(--f-display);margin:.3rem 0}.champion-card p{color:var(--gold);margin:0}
 .finalist-line{border-top:1px solid rgba(255,255,255,.12);margin-top:.9rem;padding-top:.75rem;color:var(--muted);font-size:.82rem}
 .round-section{display:grid;gap:.7rem}
-.round-heading{display:flex;justify-content:space-between;align-items:end;gap:.5rem}
+.round-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:.5rem}
 .round-heading h2{font:800 1.35rem var(--f-display);margin:.1rem 0 0}
 .round-count{white-space:nowrap}.round-count.complete{color:var(--gold);border-color:rgba(255,200,87,.35)}
 .round-matches{display:grid;gap:.7rem}

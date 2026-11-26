@@ -23,7 +23,7 @@ function Side({ s, letter, base, picked, pending, dim, canVote, canLike, busy, o
       <audio controls preload="metadata" src={`${base}/${s.audio_key}`} aria-label={`Écouter l'opening ${letter}`} />
       <div className="side-actions">
         {s.mine ? <span className="note">Ton opening</span> : <button type="button" className="choose-button" onClick={onChoose} disabled={!canVote || busy} aria-pressed={pending}>{pending ? 'Sélectionné ✓' : picked ? 'Ton vote actuel' : `Choisir ${letter}`}</button>}
-        {!s.mine && <button type="button" className={`like-button${s.liked ? ' liked' : ''}`} onClick={onLike} disabled={busy || !canLike} aria-pressed={!!s.liked} aria-label={s.liked ? 'Retirer le like' : 'Aimer cet opening'}>♥ <span>{s.likes ?? 0}</span></button>}
+        {!s.mine && <button type="button" className={`like-button${s.liked ? ' liked' : ''}`} onClick={onLike} disabled={busy || !canLike} aria-pressed={!!s.liked} aria-label={s.liked ? 'Retirer le like' : 'Aimer cet opening'}>♥ <span>{s.likes == null ? (s.liked ? 'Aimé' : 'J’aime') : s.likes}</span></button>}
       </div>
     </article>
   );

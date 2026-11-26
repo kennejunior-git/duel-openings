@@ -2,7 +2,7 @@
 import './admin.css';
 import './duel.css';
 import { useCallback, useEffect, useState } from 'react';
-type I = { tournament: { name: string } | null; finished?: boolean; round?: number | null; next_round?: number; next_opening?: number; matches?: number; open?: number; votes?: number; closes_at?: string | null; participants?: number; jurors?: number; openings?: Record<string, number> };
+type I = { tournament: { name: string; jury_enabled?: boolean } | null; finished?: boolean; round?: number | null; next_round?: number; next_opening?: number; matches?: number; open?: number; votes?: number; jury_votes?: number; jury_required?: number; closes_at?: string | null; participants?: number; jurors?: number; openings?: Record<string, number> };
 export default function AdminRounds() {
   const [i, setI] = useState<I | null>(null);
   const [minutes, setMinutes] = useState(15);
@@ -36,8 +36,9 @@ export default function AdminRounds() {
         <div className="stat">
           <p><b>Tour {i.round}</b> en cours · {i.matches} combats · {i.votes} votes</p>
           {i.closes_at && <p className="muted small">Fin du vote : {new Date(i.closes_at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}</p>}
-          <p className="muted small">À la fin du compte à rebours, les votes sont bloqués. Clique ensuite sur « Clôturer » pour calculer les résultats ; en cas d’égalité, le jury doit voter.</p>
-          <button type="button" className={confirm ? 'danger' : ''} disabled={busy || (!!i.closes_at && Date.parse(i.closes_at) > now)} onClick={() => (confirm ? go({ action: 'close' }, j => (j.finished ? 'Tournoi terminé !' : `Tour ${j.round} clôturé.`)) : setConfirm(true))}>{busy ? '…' : i.closes_at && Date.parse(i.closes_at) > now ? 'Votes en cours…' : confirm ? 'Touche encore pour clôturer' : 'Clôturer maintenant'}</button>
+          <p className="muted small">À la fin du compte à rebours, les votes sont bloqués. Chaque juré doit avoir voté dans chaque combat avant la clôture. En cas d’égalité, le jury effectue ensuite un vote de départage.</p>
+          {i.tournament.jury_enabled && <p className="muted small">Votes du jury : {i.jury_votes ?? 0} / {i.jury_required ?? 0} sur l’ensemble des combats.</p>}
+          <button type="button" className={confirm ? 'danger' : ''} disabled={busy || (!!i.closes_at && Date.parse(i.closes_at) > now) || (!!i.tournament.jury_enabled && (i.jury_votes ?? 0) < (i.jury_required ?? 0))} onClick={() => (confirm ? go({ action: 'close' }, j => (j.finished ? 'Tournoi terminé !' : `Tour ${j.round} clôturé.`)) : setConfirm(true))}>{busy ? '…' : i.closes_at && Date.parse(i.closes_at) > now ? 'Votes en cours…' : i.tournament.jury_enabled && (i.jury_votes ?? 0) < (i.jury_required ?? 0) ? 'En attente du jury…' : confirm ? 'Touche encore pour clôturer' : 'Clôturer maintenant'}</button>
         </div>
       )}
       {i?.tournament && (i.open ?? 0) === 0 && (

@@ -2,7 +2,7 @@
 import './admin.css';
 import './duel.css';
 import { useCallback, useEffect, useState } from 'react';
-type I = { tournament: { name: string } | null; finished?: boolean; round?: number | null; next_round?: number; next_opening?: number; matches?: number; open?: number; votes?: number; closes_at?: string | null };
+type I = { tournament: { name: string } | null; finished?: boolean; round?: number | null; next_round?: number; next_opening?: number; matches?: number; open?: number; votes?: number; closes_at?: string | null; participants?: number; jurors?: number; openings?: Record<string, number> };
 export default function AdminRounds() {
   const [i, setI] = useState<I | null>(null);
   const [minutes, setMinutes] = useState(15);
@@ -28,6 +28,7 @@ export default function AdminRounds() {
       <h2>Combats</h2>
       {msg && <p className="msg" role="status">{msg}</p>}
       {!i && <p className="muted">Chargement…</p>}
+      {i && <div className="stat"><b>Préparation du tournoi</b><p className="muted small">Participants inscrits : {i.participants ?? 0} · Jurés inscrits : {i.jurors ?? 0}</p><p className="muted small">Openings reçus : n°1 {i.openings?.['1'] ?? 0} · n°2 {i.openings?.['2'] ?? 0} · n°3 {i.openings?.['3'] ?? 0}</p><p className="muted small">Pour éviter tout gagnant d’office, il faut exactement 2, 4, 8, 16 ou 32 participants et un jury impair (1, 3, 5, 7…). Tous les participants doivent avoir envoyé les trois openings.</p></div>}
       {i && !i.tournament && <p className="muted">{i.finished ? 'Le tournoi est terminé. ' : ''}Passe un tournoi au statut « En cours » pour lancer les combats.</p>}
       {i?.tournament && (i.open ?? 0) > 0 && (
         <div className="stat">
@@ -50,7 +51,7 @@ export default function AdminRounds() {
       {i?.tournament && (
         <div className="stat reset-stat">
           <p><b>Recommencer les combats</b></p>
-          <p className="muted small">Efface les combats et les votes de ce tournoi. Les participants, codes et openings sont conservés. Cette action est irréversible.</p>
+          <p className="muted small">Efface les combats, votes et points de ce tournoi. Les participants, codes et openings sont conservés. Cette action est irréversible.</p>
           <button type="button" className="danger" disabled={busy} onClick={() => resetConfirm ? go({ action: 'reset' }, j => `Réinitialisation terminée : ${j.removed_matches} combats supprimés. Le prochain lancement sera le tour 1.`) : setResetConfirm(true)}>{busy ? '…' : resetConfirm ? 'Confirmer la réinitialisation' : 'Réinitialiser les combats'}</button>
           {resetConfirm && <button type="button" className="ghost" disabled={busy} onClick={() => setResetConfirm(false)}>Annuler</button>}
         </div>

@@ -2,8 +2,8 @@
 import './duel.css';
 import { useCallback, useEffect, useState } from 'react';
 type S = { entry_id: string; audio_key: string; duration_sec: number; mine: boolean; liked?: boolean; likes?: number | null };
-type M = { id: string; round: number; n: number; closes_at: string; open: boolean; can_jury_tiebreak?: boolean; my_tiebreak?: string | null; slot_1: S; slot_2: S; my_vote: string | null };
-type D = { tournament: { name: string } | null; matches: M[]; publicBase: string };
+type M = { id: string; round: number; n: number; closes_at: string; open: boolean; can_jury_vote?: boolean; can_jury_tiebreak?: boolean; my_tiebreak?: string | null; slot_1: S; slot_2: S; my_vote: string | null };
+type D = { tournament: { name: string } | null; role?: string; matches: M[]; publicBase: string };
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 function Left({ to }: { to: string }) {
   const [ms, setMs] = useState<number | null>(null);
@@ -71,13 +71,14 @@ export default function DuelBoard({ canVote = true }: { canVote?: boolean }) {
       {notice && <p className="duel-notice" role="status">{notice}</p>}
       {d.matches.map(m => {
         const mine = m.slot_1.mine || m.slot_2.mine;
-        const votingOpen = canVote && m.open && Date.parse(m.closes_at) > Date.now() && !mine;
+        const votingOpen = canVote && !mine && ((m.open && Date.parse(m.closes_at) > Date.now()) || (d.role === 'jury' && !!m.can_jury_vote));
         const selected = pending?.matchId === m.id ? pending.entryId : null;
         const sides: ['A' | 'B', S][] = [['A', m.slot_1], ['B', m.slot_2]];
         return (
           <section className="match" key={m.id}>
             <div className="m-head"><div><span className="eyebrow">DUEL {String(m.n).padStart(2, '0')}</span><b>Combat {m.n}</b></div><span className={m.open ? 'timer-active' : 'timer-closed'}><Left to={m.closes_at} /></span></div>
             {mine && <p className="note">Ton opening participe à ce combat : tu ne peux pas voter contre toi-même.</p>}
+            {d.role === 'jury' && m.can_jury_vote && !m.open && <p className="note">Le délai est dépassé, mais ton vote du jury reste attendu. Tu peux encore voter tant que l’administrateur n’a pas clôturé ce combat.</p>}
             {!canVote && <p className="note">Mode administrateur : consultation uniquement, aucun vote ni like.</p>}
             <div className="sides">
               {sides.map(([L, s]) => (

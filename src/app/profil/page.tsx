@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/session';
 import AdminCodes from '@/components/AdminCodes';
+import AdminStats from '@/components/AdminStats';
 import AdminTournaments from '@/components/AdminTournaments';
 import AdminRounds from '@/components/AdminRounds';
 import LogoutButton from '@/components/LogoutButton';
@@ -14,7 +15,7 @@ export default async function Profil() {
       <h1>{s.pseudo}</h1>
       <p className="muted">{LABEL[s.role]}</p>
       <LogoutButton />
-      {s.role === 'admin' && <><AdminTournaments /><AdminRounds /><AdminCodes /></>}
+      {s.role === 'admin' && <><AdminStats /><AdminTournaments /><AdminRounds /><AdminCodes /></>}
     </section>
   );
 }

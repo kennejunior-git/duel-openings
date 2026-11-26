@@ -33,7 +33,7 @@ export default function DuelBoard() {
     try { const r = await fetch('/api/duel', { cache: 'no-store' }); if (!r.ok) throw new Error(); setD(await r.json()); }
     catch { setErr('Impossible de charger les combats.'); }
   }, []);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load(); const timer = setInterval(load, 10000); return () => clearInterval(timer); }, [load]);
   async function vote(m: M, entry: string) {
     setBusy(true); setErr('');
     try {
@@ -52,7 +52,7 @@ export default function DuelBoard() {
       {err && <p className="err" role="alert">{err}</p>}
       {d.matches.map(m => {
         const mine = m.slot_1.mine || m.slot_2.mine;
-        const canVote = m.open && !mine;
+        const canVote = m.open && Date.parse(m.closes_at) > Date.now() && !mine;
         const sides: ['A' | 'B', S][] = [['A', m.slot_1], ['B', m.slot_2]];
         return (
           <div className="match" key={m.id}>

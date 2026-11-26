@@ -5,6 +5,6 @@ export const dynamic = 'force-dynamic';
 export default async function Page() {
   const s = await getSession();
   if (!s) redirect('/login');
-  if (s.role !== 'participant' && s.role !== 'admin') redirect('/');
+  if (s.role !== 'participant') redirect('/profil');
   return <section className="page"><h1>Mes openings</h1><OpeningsManager /></section>;
 }

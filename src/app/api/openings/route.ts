@@ -1,7 +1,7 @@
 import { rpc } from '@/lib/db';
 import { getSession } from '@/lib/session';
 const base = process.env.SUPABASE_URL!;
-async function me() { const s = await getSession(); return s && (s.role === 'participant' || s.role === 'admin') ? s.id : null; }
+async function me() { const s = await getSession(); return s?.role === 'participant' ? s.id : null; }
 const no = () => Response.json({ error: 'Accès refusé.' }, { status: 403 });
 const fail = (m = 'Action refusée (envoi fermé ou données invalides).') => Response.json({ error: m }, { status: 400 });
 export async function GET() {

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './admin.css';
 type Participant = { pseudo: string; openings_count: number; opening_1: boolean; opening_2: boolean; opening_3: boolean };
-type Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number };
+type JuryMember = { pseudo: string; has_voted: boolean };\ntype Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number; jury_members: JuryMember[] };
 export default function AdminOpeningProgress() {
   const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState('all');
@@ -28,6 +28,17 @@ export default function AdminOpeningProgress() {
     {data && <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(105px,1fr))',gap:8,marginBottom:14}}>
       <div style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>Jury ayant voté</div><b style={{fontSize:24}}>{data.jury_voted}/{data.jury_total}</b><div className="muted" style={{fontSize:11}}>Membres distincts</div></div>
       {['Aucun','1 opening','2 openings','3 openings'].map((label,n)=><div key={label} style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>{label}</div><b style={{fontSize:24}}>{totals[n]}</b></div>)}
+    </div>}
+    {data && <div style={{border:'1px solid var(--line,#333)',borderRadius:12,padding:12,marginBottom:16}}>
+      <h3 style={{margin:'0 0 10px'}}>Suivi des votes du jury</h3>
+      <p className="muted" style={{margin:'0 0 10px',fontSize:13}}>Les membres ci-dessous n’ont encore enregistré aucun vote dans ce tournoi.</p>
+      {data.jury_members.filter(j => !j.has_voted).length === 0
+        ? <p style={{margin:0}}>✓ Tous les membres du jury ont déjà voté.</p>
+        : <ul style={{margin:0,paddingLeft:20}}>{data.jury_members.filter(j => !j.has_voted).map(j => <li key={j.pseudo} style={{padding:'4px 0',fontWeight:600}}>{j.pseudo} <span style={{color:'#f59e0b',fontWeight:400,fontSize:12}}>— N’a pas encore voté</span></li>)}</ul>}
+      <details style={{marginTop:10}}>
+        <summary style={{cursor:'pointer'}}>Voir tous les membres du jury ({data.jury_total})</summary>
+        <ul style={{margin:'8px 0 0',paddingLeft:20}}>{data.jury_members.map(j => <li key={j.pseudo} style={{padding:'3px 0'}}>{j.pseudo} — {j.has_voted ? 'A voté' : 'En attente'}</li>)}</ul>
+      </details>
     </div>}
     <div className="seg small" role="group" aria-label="Filtrer les participants">
       {[['all','Tous'],['none','0'],['one','1'],['two','2'],['three','3']].map(([v,label])=><button type="button" key={v} className={filter===v?'on':''} aria-pressed={filter===v} onClick={()=>setFilter(v)}>{label}</button>)}

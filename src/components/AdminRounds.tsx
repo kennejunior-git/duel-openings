@@ -7,6 +7,7 @@ export default function AdminRounds() {
   const [i, setI] = useState<I | null>(null);
   const [minutes, setMinutes] = useState(15);
   const [confirm, setConfirm] = useState(false);
+  const [resetConfirm, setResetConfirm] = useState(false);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
   const load = useCallback(async () => {
@@ -44,6 +45,14 @@ export default function AdminRounds() {
           </div>
           <button type="button" disabled={busy} onClick={() => go({ action: 'start', minutes }, j => `Tour ${j.round} lancé : ${j.matches} combats.`)}>{busy ? '…' : `Lancer le tour ${i.next_round}`}</button>
           <p className="muted small">Tirage au sort automatique. Après le tour 3, on repart sur l'opening n°1 jusqu'à ce qu'il reste un seul gagnant.</p>
+        </div>
+      )}
+      {i?.tournament && (
+        <div className="stat reset-stat">
+          <p><b>Recommencer les combats</b></p>
+          <p className="muted small">Efface les combats et les votes de ce tournoi. Les participants, codes et openings sont conservés. Cette action est irréversible.</p>
+          <button type="button" className="danger" disabled={busy} onClick={() => resetConfirm ? go({ action: 'reset' }, j => `Réinitialisation terminée : ${j.removed_matches} combats supprimés. Le prochain lancement sera le tour 1.`) : setResetConfirm(true)}>{busy ? '…' : resetConfirm ? 'Confirmer la réinitialisation' : 'Réinitialiser les combats'}</button>
+          {resetConfirm && <button type="button" className="ghost" disabled={busy} onClick={() => setResetConfirm(false)}>Annuler</button>}
         </div>
       )}
     </section>

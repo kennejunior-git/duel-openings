@@ -33,14 +33,14 @@ export default function AdminRounds() {
           <p><b>Tour {i.round}</b> en cours · {i.matches} combats · {i.votes} votes</p>
           {i.closes_at && <p className="muted small">Fin du vote : {new Date(i.closes_at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}</p>}
           <p className="muted small">Le tour se clôture tout seul à la fin du temps. Toi seul décides quand lancer le suivant.</p>
-          <button type="button" className={confirm ? 'danger' : ''} disabled={busy} onClick={() => (confirm ? go({ action: 'close' }, j => (j.finished ? 'Tournoi terminé !' : `Tour ${j.round} clôturé.`)) : setConfirm(true))}>{confirm ? 'Touche encore pour clôurer' : 'Cloturer maintenant'}</button>
+          <button type="button" className={confirm ? 'danger' : ''} disabled={busy} onClick={() => (confirm ? go({ action: 'close' }, j => (j.finished ? 'Tournoi terminé !' : `Tour ${j.round} clôturé.`)) : setConfirm(true))}>{confirm ? 'Touche encore pour clôturer' : 'Clôturer maintenant'}</button>
         </div>
-      ))}
+      )}
       {i?.tournament && (i.open ?? 0) === 0 && (
         <div className="stat">
-          <p>Prêt pour le <b>tour {i.next_round}</b> (opening n° {i.next_opening}).</p>
-          <div className="seg" role="group" aria-label="Durée du vote">
-            {[5, 15, 30, 60].map(m => <button key={m} type="button" className={minutes === m ? 'on' : ''} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m} min</button>)}}
+          <p>Prêt pour le <b>tour {i.next_round}</b> (opening n°{i.next_opening}).</p>
+          <div className="seg" role="group" aria-label="Durée du vote en minutes">
+            {[5, 15, 30, 60].map(m => <button key={m} type="button" className={minutes === m ? 'on' : ''} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m} min</button>)}
           </div>
           <button type="button" disabled={busy} onClick={() => go({ action: 'start', minutes }, j => `Tour ${j.round} lancé : ${j.matches} combats.`)}>{busy ? '…' : `Lancer le tour ${i.next_round}`}</button>
           <p className="muted small">Tirage au sort automatique. Après le tour 3, on repart sur l'opening n°1 jusqu'à ce qu'il reste un seul gagnant.</p>

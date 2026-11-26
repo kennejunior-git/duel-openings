@@ -3,7 +3,8 @@ import './bracket.css';
 import { useCallback, useEffect, useState } from 'react';
 
 type Slot = { entry_id: string; mine: boolean; votes: number | null; pub?: number | null; jury?: number | null; score?: number | null; won: boolean | null; picked: boolean; pseudo: string | null; title: string | null } | null;
-type VoteDetail = { pseudo: string | null; role: string; entry_id: string };\ntype M = { n: number; id: string; state: 'open' | 'closing' | 'bye' | 'closed'; decided_by: string | null; slot_1: Slot; slot_2: Slot; vote_details?: VoteDetail[] | null; tiebreak_details?: VoteDetail[] | null };
+type VoteDetail = { pseudo: string | null; role: string; entry_id: string };
+type M = { n: number; id: string; state: 'open' | 'closing' | 'bye' | 'closed'; decided_by: string | null; slot_1: Slot; slot_2: Slot; vote_details?: VoteDetail[] | null; tiebreak_details?: VoteDetail[] | null };
 type R = { round: number; matches: M[] };
 type P = { pseudo: string; title: string };
 type D = { tournament: { name: string; status: string; jury_enabled?: boolean } | null; champion?: P | null; finalist?: P | null; rounds?: R[] };

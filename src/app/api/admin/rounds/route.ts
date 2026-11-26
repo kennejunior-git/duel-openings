@@ -12,6 +12,6 @@ export async function POST(req: Request) {
     if (b.action === 'start') return Response.json({ ok: true, ...(await rpc<any>('app_admin_start_round', { p_admin_id: id, p_minutes: Number(b.minutes) || 15 })) });
     if (b.action === 'close') return Response.json({ ok: true, ...(await rpc<any>('app_admin_close_round', { p_admin_id: id })) });
     if (b.action === 'reset') return Response.json({ ok: true, ...(await rpc<any>('app_admin_reset_rounds', { p_admin_id: id })) });
-  } catch { return Response.json({ error: "Impossible : vérifie que le tournoi est « En cours », qu'il y a au moins 2 participants avec un opening, et que le tour précédent est clôturé." }, { status: 400 }); }
+  } catch { return Response.json({ error: b.action === 'start' ? "Lancement bloqué : il faut 2, 4, 8, 16 ou 32 participants qualifiés, tous avec l'opening demandé. Si le jury est activé, il doit avoir un nombre impair de membres inscrits." : b.action === 'close' ? "Clôture bloquée : vérifie que tous les votes sont terminés et que le jury a départagé chaque égalité." : 'Action impossible. Vérifie le tournoi.' }, { status: 400 }); }
   return Response.json({ error: 'Action inconnue.' }, { status: 400 });
 }

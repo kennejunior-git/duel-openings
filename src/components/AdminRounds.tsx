@@ -44,7 +44,7 @@ export default function AdminRounds() {
             {[5, 15, 30, 60].map(m => <button key={m} type="button" className={minutes === m ? 'on' : ''} aria-pressed={minutes === m} onClick={() => setMinutes(m)}>{m} min</button>)}
           </div>
           <button type="button" disabled={busy} onClick={() => go({ action: 'start', minutes }, j => `Tour ${j.round} lancé : ${j.matches} combats.`)}>{busy ? '…' : `Lancer le tour ${i.next_round}`}</button>
-          <p className="muted small">Aucun gagnant d’office : seuls les tableaux complets de 2, 4, 8, 16 ou 32 participants sont acceptés. Chaque participant actif doit avoir envoyé son opening du tour. En cas d’égalité, le jury départage le combat.</p>
+          <p className="muted small">Aucun gagnant d’office : seuls les tableaux complets de 2, 4, 8, 16 ou 32 participants sont acceptés. Chaque participant actif doit avoir envoyé ses trois openings. Le jury doit être activé et compter un nombre impair de membres inscrits.</p>
         </div>
       )}
       {i?.tournament && (

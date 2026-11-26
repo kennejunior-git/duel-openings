@@ -5,7 +5,7 @@ import { Home, Swords, Music, Trophy, User } from 'lucide-react';
 const ALL = [
   { href: '/', label: 'Accueil', Icon: Home },
   { href: '/duel', label: 'Duel', Icon: Swords },
-  { href: '/openings', label: 'Openings', Icon: Music, only: ['participant', 'admin'] },
+  { href: '/openings', label: 'Openings', Icon: Music, only: ['participant'] },
   { href: '/tableau', label: 'Tableau', Icon: Trophy },
   { href: '/profil', label: 'Profil', Icon: User },
 ];

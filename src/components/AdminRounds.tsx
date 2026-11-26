@@ -10,18 +10,20 @@ export default function AdminRounds() {
   const [resetConfirm, setResetConfirm] = useState(false);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [now, setNow] = useState(Date.now());
   const load = useCallback(async () => {
     try { const r = await fetch('/api/admin/rounds', { cache: 'no-store' }); if (r.ok) setI(await r.json()); else setMsg('Impossible de charger les combats.'); }
     catch { setMsg('Connexion impossible.'); }
   }, []);
   useEffect(() => { load(); }, [load]);
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
   async function go(body: object, ok: (j: any) => string) {
     setBusy(true); setMsg('');
     try {
       const r = await fetch('/api/admin/rounds', { method: 'POST', body: JSON.stringify(body) });
       const j = await r.json();
       setMsg(r.ok ? ok(j) : j.error || 'Erreur.'); load();
-    } catch { setMsg('Connexion impossible.'); } finally { setBusy(false); setConfirm(false); }
+    } catch { setMsg('Connexion impossible.'); } finally { setBusy(false); setConfirm(false); setResetConfirm(false); }
   }
   return (
     <section className="rounds">
@@ -34,8 +36,8 @@ export default function AdminRounds() {
         <div className="stat">
           <p><b>Tour {i.round}</b> en cours · {i.matches} combats · {i.votes} votes</p>
           {i.closes_at && <p className="muted small">Fin du vote : {new Date(i.closes_at).toLocaleString('fr-FR', { dateStyle: 'medium', timeStyle: 'short' })}</p>}
-          <p className="muted small">Le tour se clôture tout seul à la fin du temps. Toi seul décides quand lancer le suivant.</p>
-          <button type="button" className={confirm ? 'danger' : ''} disabled={busy} onClick={() => (confirm ? go({ action: 'close' }, j => (j.finished ? 'Tournoi terminé !' : `Tour ${j.round} clôturé.`)) : setConfirm(true))}>{confirm ? 'Touche encore pour clôturer' : 'Clôturer maintenant'}</button>
+          <p className="muted small">À la fin du compte à rebours, les votes sont bloqués. Clique ensuite sur « Clôturer » pour calculer les résultats ; en cas d’égalité, le jury doit voter.</p>
+          <button type="button" className={confirm ? 'danger' : ''} disabled={busy || (!!i.closes_at && Date.parse(i.closes_at) > now)} onClick={() => (confirm ? go({ action: 'close' }, j => (j.finished ? 'Tournoi terminé !' : `Tour ${j.round} clôturé.`)) : setConfirm(true))}>{busy ? '…' : i.closes_at && Date.parse(i.closes_at) > now ? 'Votes en cours…' : confirm ? 'Touche encore pour clôturer' : 'Clôturer maintenant'}</button>
         </div>
       )}
       {i?.tournament && (i.open ?? 0) === 0 && (

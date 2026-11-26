@@ -2,7 +2,7 @@
 import './duel.css';
 import { useCallback, useEffect, useState } from 'react';
 type S = { entry_id: string; audio_key: string; duration_sec: number; mine: boolean };
-type M = { id: string; round: number; n: number; closes_at: string; open: boolean; slot_1: S; slot_2: S; my_vote: string | null };
+type M = { id: string; round: number; n: number; closes_at: string; open: boolean; can_jury_tiebreak?: boolean; my_tiebreak?: string | null; slot_1: S; slot_2: S; my_vote: string | null };
 type D = { tournament: { name: string } | null; matches: M[]; publicBase: string };
 const mmss = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 function Left({ to }: { to: string }) {
@@ -34,6 +34,15 @@ export default function DuelBoard() {
     catch { setErr('Impossible de charger les combats.'); }
   }, []);
   useEffect(() => { load(); const timer = setInterval(load, 10000); return () => clearInterval(timer); }, [load]);
+  async function juryTiebreak(m: M, entry: string) {
+    setBusy(true); setErr('');
+    try {
+      const r = await fetch('/api/duel', { method: 'POST', body: JSON.stringify({ action: 'jury_tiebreak', match_id: m.id, entry_id: entry }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) setErr(j.error || 'Vote du jury refusé.');
+      await load();
+    } catch { setErr('Connexion impossible.'); } finally { setBusy(false); }
+  }
   async function vote(m: M, entry: string) {
     setBusy(true); setErr('');
     try {
@@ -63,6 +72,15 @@ export default function DuelBoard() {
                 <Side key={L} s={s} letter={L} base={d.publicBase} picked={m.my_vote === s.entry_id} dim={!!m.my_vote && m.my_vote !== s.entry_id} canVote={canVote} busy={busy} onVote={() => vote(m, s.entry_id)} />
               ))}
             </div>
+            {m.can_jury_tiebreak && (
+              <div className="jury-tiebreak">
+                <p className="note">Égalité : le jury doit départager ce combat.</p>
+                <div className="sides">
+                  <button type="button" disabled={busy} aria-pressed={m.my_tiebreak === m.slot_1.entry_id} onClick={() => juryTiebreak(m, m.slot_1.entry_id)}>{m.my_tiebreak === m.slot_1.entry_id ? 'Ton choix du jury ✓' : 'Le jury choisit A'}</button>
+                  <button type="button" disabled={busy} aria-pressed={m.my_tiebreak === m.slot_2.entry_id} onClick={() => juryTiebreak(m, m.slot_2.entry_id)}>{m.my_tiebreak === m.slot_2.entry_id ? 'Ton choix du jury ✓' : 'Le jury choisit B'}</button>
+                </div>
+              </div>
+            )}
           </div>
         );
       })}

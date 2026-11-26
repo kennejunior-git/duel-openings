@@ -13,6 +13,7 @@ export default function AdminCodes() {
   const [filter, setFilter] = useState('all');
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [busyCode, setBusyCode] = useState<string | null>(null);
   const load = useCallback(async () => {
     try {
       const r = await fetch('/api/admin/codes', { cache: 'no-store' });
@@ -29,8 +30,16 @@ export default function AdminCodes() {
     } catch { setMsg('Connexion impossible.'); } finally { setBusy(false); }
   }
   async function toggle(c: C) {
+    setBusyCode(c.id); setMsg('');
     setList(l => l.map(x => (x.id === c.id ? { ...x, active: !x.active } : x)));
-    try { await fetch('/api/admin/codes', { method: 'PATCH', body: JSON.stringify({ id: c.id, active: !c.active }) }); } catch { load(); }
+    try {
+      const r = await fetch('/api/admin/codes', { method: 'PATCH', body: JSON.stringify({ id: c.id, active: !c.active }) });
+      if (!r.ok) throw new Error('Action refusée.');
+      setMsg(c.active ? 'Code désactivé.' : 'Code réactivé.');
+    } catch (e) {
+      setList(l => l.map(x => (x.id === c.id ? { ...x, active: c.active } : x)));
+      setMsg(e instanceof Error ? e.message : 'Impossible de modifier ce code.');
+    } finally { setBusyCode(null); }
   }
   async function copy(text: string) {
     try { await navigator.clipboard.writeText(text); setMsg('Copié.'); } catch { setMsg('Copie impossible : sélectionne le texte à la main.'); }
@@ -62,7 +71,7 @@ export default function AdminCodes() {
           <li key={c.id} className={c.active ? '' : 'off'}>
             <div><code>{c.code}</code><span className={`chip ${c.role}`}>{LABEL[c.role]}</span></div>
             <div className="who">{c.pseudo ? <b>{c.pseudo}</b> : <em>En attente</em>}</div>
-            {c.role !== 'admin' && <button type="button" className="ghost" onClick={() => toggle(c)}>{c.active ? 'Désactiver' : 'Activer'}</button>}
+            {c.role !== 'admin' && <button type="button" className="ghost" onClick={() => toggle(c)} disabled={busyCode === c.id}>{busyCode === c.id ? '…' : c.active ? 'Désactiver' : 'Activer'}</button>}
           </li>
         ))}
       </ul>

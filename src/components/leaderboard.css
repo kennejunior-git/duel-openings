@@ -1,0 +1,22 @@
+.leaderboard{display:grid;gap:1rem;margin-top:1.5rem}
+.leaderboard-head{display:flex;align-items:flex-end;justify-content:space-between;gap:.6rem}
+.leaderboard-head h2{font:800 1.35rem var(--f-display);margin:.15rem 0 0}
+.leaderboard-live{font-size:.65rem;color:var(--muted);text-align:right}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;align-items:end}
+.podium-card{min-width:0;display:grid;justify-items:center;text-align:center;gap:.3rem;padding:.8rem .35rem;border:1px solid var(--line);border-radius:15px;background:linear-gradient(160deg,#27214f,#1d1940);overflow:hidden}
+.podium-card.place-1{min-height:160px;border-color:rgba(255,200,87,.7);background:linear-gradient(160deg,#403351,#211b43)}
+.podium-card.place-2{min-height:142px}.podium-card.place-3{min-height:128px}
+.podium-card.is-me,.leaderboard-row.is-me{box-shadow:inset 0 0 0 1px var(--b)}
+.podium-medal{font-size:1.35rem}.podium-rank{font-size:.6rem;font-weight:800;letter-spacing:.12em;color:var(--gold)}
+.podium-name{max-width:100%;font-size:.78rem;overflow-wrap:anywhere}.podium-name small{display:block;color:var(--b);font-size:.55rem;letter-spacing:.1em}
+.podium-card strong{font:800 1.05rem var(--f-display);color:var(--gold)}.podium-card strong small,.leaderboard-row strong small{font:600 .65rem var(--f-body);color:var(--muted)}
+.podium-meta{font-size:.63rem;color:var(--muted)}
+.leaderboard-list{display:grid;gap:.45rem}
+.leaderboard-row{display:grid;grid-template-columns:2.2rem minmax(0,1fr) auto;align-items:center;gap:.7rem;padding:.75rem;background:var(--night);border:1px solid var(--line);border-radius:13px;min-width:0}
+.leaderboard-position{font:800 1rem var(--f-display);color:var(--muted);font-variant-numeric:tabular-nums}
+.leaderboard-player{display:grid;gap:.05rem;min-width:0}.leaderboard-player b{font-size:.9rem;overflow-wrap:anywhere}.leaderboard-player span{font-size:.62rem;color:var(--b);font-weight:800}.leaderboard-player small{font-size:.68rem;color:var(--muted)}
+.leaderboard-row>strong{font:800 1rem var(--f-display);color:var(--gold);white-space:nowrap}
+.leaderboard-empty{padding:1.2rem;border:1px dashed var(--line);border-radius:16px;text-align:center;display:grid;justify-items:center;gap:.4rem}
+.leaderboard-empty-icon{font-size:1.8rem}.leaderboard-empty b{font-size:.95rem}.leaderboard-empty p{margin:0;color:var(--muted);font-size:.82rem}
+.leaderboard-empty button{margin-top:.4rem}
+@media(min-width:560px){.podium{gap:.8rem}.podium-card{padding:1rem}.podium-name{font-size:.9rem}.podium-card.place-1{min-height:185px}.podium-card.place-2{min-height:165px}.podium-card.place-3{min-height:148px}}

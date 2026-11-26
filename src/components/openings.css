@@ -1,0 +1,10 @@
+.openings{display:grid;gap:.9rem}.small{font-size:.8rem;margin:0}
+.slot{background:var(--night);border:1px solid var(--line);border-radius:16px;padding:1rem;display:grid;gap:.7rem}
+.slot-head{display:flex;align-items:center;gap:.6rem}.slot-head b{font:700 1.1rem var(--f-display)}
+.badge{display:grid;place-items:center;width:2rem;height:2rem;border-radius:50%;background:var(--gold);color:#2a1d00;font:800 1rem var(--f-display)}
+.moves{margin-left:auto;display:flex;gap:.4rem}.moves .ghost{padding:.45rem .6rem}.moves .ghost:disabled{opacity:.3}
+.slot-body{display:grid;gap:.3rem}.etitle{margin:0;font-weight:700}.slot audio{width:100%;margin-top:.3rem}
+.slot-form{display:grid;gap:.6rem}.slot-form input[type=file]{font-size:.95rem;letter-spacing:0}.slot-form input[type=text]{letter-spacing:0}
+.slot .acts{display:flex;gap:.6rem}.slot .acts button{flex:1}
+.slot .ghost{background:transparent;color:var(--paper);border:1px solid var(--line);padding:.7rem .8rem;font-size:.95rem}
+.slot .danger{background:transparent;color:var(--a);border:1px solid var(--a);padding:.7rem .8rem;font-size:.95rem}

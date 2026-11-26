@@ -3,7 +3,7 @@ import './bracket.css';
 import { useCallback, useEffect, useState } from 'react';
 
 type Slot = { entry_id: string; mine: boolean; votes: number | null; pub?: number | null; jury?: number | null; score?: number | null; won: boolean | null; picked: boolean; pseudo: string | null; title: string | null } | null;
-type M = { n: number; id: string; state: 'open' | 'closing' | 'bye' | 'closed'; decided_by: string | null; slot_1: Slot; slot_2: Slot };
+type VoteDetail = { pseudo: string | null; role: string; entry_id: string };\ntype M = { n: number; id: string; state: 'open' | 'closing' | 'bye' | 'closed'; decided_by: string | null; slot_1: Slot; slot_2: Slot; vote_details?: VoteDetail[] | null; tiebreak_details?: VoteDetail[] | null };
 type R = { round: number; matches: M[] };
 type P = { pseudo: string; title: string };
 type D = { tournament: { name: string; status: string; jury_enabled?: boolean } | null; champion?: P | null; finalist?: P | null; rounds?: R[] };
@@ -44,6 +44,18 @@ function Match({ m, jury }: { m: M; jury: boolean }) {
         {m.slot_2 && <Row s={m.slot_2} letter="B" total={total} jury={jury} />}
       </div>
       {method && <p className="decision-method">{method}</p>}
+      {m.state === 'closed' && <details className="match-vote-details">
+        <summary>Voir les votes et les votants</summary>
+        <div className="vote-details-content">
+          <b>Votes du combat ({(m.vote_details ?? []).length})</b>
+          {(m.vote_details ?? []).length === 0 ? <p className="muted">Aucun vote enregistré.</p> :
+            <ul>{(m.vote_details ?? []).map((v, i) => <li key={i}><b>{v.pseudo || 'Pseudo indisponible'}</b> <span>({v.role === 'jury' ? 'Jury' : v.role === 'voter' ? 'Votant' : v.role === 'participant' ? 'Participant' : v.role})</span> — {v.entry_id === m.slot_1?.entry_id ? 'Opening A' : 'Opening B'}</li>)}</ul>}
+          {(m.tiebreak_details ?? []).length > 0 && <>
+            <b>Départage du jury</b>
+            <ul>{(m.tiebreak_details ?? []).map((v, i) => <li key={i}><b>{v.pseudo || 'Pseudo indisponible'}</b> — {v.entry_id === m.slot_1?.entry_id ? 'Opening A' : 'Opening B'}</li>)}</ul>
+          </>}
+        </div>
+      </details>}
     </article>
   );
 }
@@ -91,7 +103,7 @@ export default function BracketBoard() {
           {d.finalist && <div className="finalist-line">Finaliste : <b>{d.finalist.pseudo}</b> · {d.finalist.title}</div>}
         </section>
       )}
-      {!done && <p className="privacy-note">Les pseudos et les titres restent masqués jusqu’à la fin du tournoi pour préserver l’anonymat des votes.</p>}
+      {!done && <p className="privacy-note">Pour préserver l’anonymat des gagnants, le pseudo du participant éliminé est révélé après chaque combat terminé. Le pseudo du qualifié reste masqué jusqu’à la fin du tournoi.</p>}
       {rounds.length === 0 && <div className="empty-bracket"><b>Pas encore de combat</b><p className="muted">L’administrateur lancera le premier tour depuis son profil.</p></div>}
       {rounds.map(r => {
         const roundDone = r.matches.every(m => m.state === 'closed' || m.state === 'bye');

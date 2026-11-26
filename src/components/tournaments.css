@@ -1,0 +1,9 @@
+.tour{margin-top:2rem}.tour h2{font:700 1.4rem var(--f-display);margin:0 0 .8rem}.small{font-size:.8rem;margin:0}
+.tcard{background:var(--night);border:1px solid var(--line);border-radius:14px;padding:.9rem 1rem;margin-top:.6rem;display:grid;gap:.4rem;justify-items:start}
+.tcard h3{margin:0;font:700 1.1rem var(--f-display)}.tcard .when{color:var(--muted);font-size:.9rem}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}.chip.st{color:var(--b);border-color:var(--b);margin-left:0}.chip.jr{color:var(--gold);border-color:var(--gold);margin-left:0}
+.tform{display:grid;gap:.8rem;margin-top:.8rem;padding:1rem;border:1px solid var(--b);border-radius:14px;background:var(--night)}
+.tform label{display:grid;gap:.25rem;color:var(--muted);font-size:.85rem}.tform input[type=text],.tform input[type=datetime-local]{letter-spacing:0}
+.tform label.sw{display:flex;align-items:center;gap:.6rem;color:var(--paper);font-size:1rem}.sw input{width:1.5rem;height:1.5rem;accent-color:var(--b)}
+.tform .seg{flex-wrap:wrap;margin:0}.tform .seg button{flex:1 1 40%}.tform .acts{display:flex;gap:.6rem}.tform .acts button{flex:1}
+.danger{background:transparent;color:var(--a);border:1px solid var(--a)}

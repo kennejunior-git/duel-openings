@@ -25,7 +25,7 @@ function Side({ s, letter, base, picked, dim, canVote, busy, onVote }: { s: S; l
     </div>
   );
 }
-export default function DuelBoard() {
+export default function DuelBoard({ canVote = true }: { canVote?: boolean }) {
   const [d, setD] = useState<D | null>(null);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -61,15 +61,15 @@ export default function DuelBoard() {
       {err && <p className="err" role="alert">{err}</p>}
       {d.matches.map(m => {
         const mine = m.slot_1.mine || m.slot_2.mine;
-        const canVote = m.open && Date.parse(m.closes_at) > Date.now() && !mine;
+        const votingOpen = canVote && m.open && Date.parse(m.closes_at) > Date.now() && !mine;
         const sides: ['A' | 'B', S][] = [['A', m.slot_1], ['B', m.slot_2]];
         return (
           <div className="match" key={m.id}>
             <div className="m-head"><b>Combat {m.n}</b><span><Left to={m.closes_at} /></span></div>
-            {mine && <p className="note">Ton opening est dans ce combat : tu ne votes pas ici.</p>}
+            {mine && <p className="note">Ton opening est dans ce combat : tu ne votes pas ici.</p>}{!canVote && <p className="note">Les administrateurs observent les combats, mais ne participent pas aux votes.</p>}
             <div className="sides">
               {sides.map(([L, s]) => (
-                <Side key={L} s={s} letter={L} base={d.publicBase} picked={m.my_vote === s.entry_id} dim={!!m.my_vote && m.my_vote !== s.entry_id} canVote={canVote} busy={busy} onVote={() => vote(m, s.entry_id)} />
+                <Side key={L} s={s} letter={L} base={d.publicBase} picked={m.my_vote === s.entry_id} dim={!!m.my_vote && m.my_vote !== s.entry_id} canVote={votingOpen} busy={busy} onVote={() => vote(m, s.entry_id)} />
               ))}
             </div>
             {m.can_jury_tiebreak && (

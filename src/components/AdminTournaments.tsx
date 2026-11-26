@@ -36,8 +36,8 @@ export default function AdminTournaments() {
     if (!form?.id) return;
     if (!confirmDel) { setConfirmDel(true); return; }
     setBusy(true);
-    try { await fetch('/api/admin/tournaments', { method: 'DELETE', body: JSON.stringify({ id: form.id }) }); setForm(null); setMsg('Supprimé.'); load(); }
-    catch { setMsg('Connexion impossible.'); } finally { setBusy(false); setConfirmDel(false); }
+    try { const r = await fetch('/api/admin/tournaments', { method: 'DELETE', body: JSON.stringify({ id: form.id }) }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'Suppression impossible.'); setForm(null); setMsg('Tournoi supprimé. Les openings liés à ce tournoi ne sont plus modifiables.'); load(); }
+    catch (e) { setMsg(e instanceof Error ? e.message : 'Connexion impossible.'); } finally { setBusy(false); setConfirmDel(false); }
   }
   return (
     <section className="tour">

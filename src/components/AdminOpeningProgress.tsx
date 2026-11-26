@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import './admin.css';
 type Participant = { pseudo: string; openings_count: number; opening_1: boolean; opening_2: boolean; opening_3: boolean };
-type Data = { tournament: string | null; participants: Participant[] };
+type Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number };
 export default function AdminOpeningProgress() {
   const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState('all');
@@ -26,6 +26,7 @@ export default function AdminOpeningProgress() {
     {data?.tournament && <p className="muted">Tournoi : <b>{data.tournament}</b></p>}
     {!data?.tournament && data && <p className="muted">Aucun tournoi en préparation ou en cours.</p>}
     {data && <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(105px,1fr))',gap:8,marginBottom:14}}>
+      <div style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>Jury ayant voté</div><b style={{fontSize:24}}>{data.jury_voted}/{data.jury_total}</b><div className="muted" style={{fontSize:11}}>Membres distincts</div></div>
       {['Aucun','1 opening','2 openings','3 openings'].map((label,n)=><div key={label} style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>{label}</div><b style={{fontSize:24}}>{totals[n]}</b></div>)}
     </div>}
     <div className="seg small" role="group" aria-label="Filtrer les participants">

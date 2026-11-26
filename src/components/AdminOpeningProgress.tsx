@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import './admin.css';
 type Participant = { pseudo: string; openings_count: number; opening_1: boolean; opening_2: boolean; opening_3: boolean };
 type JuryMember = { pseudo: string; has_voted: boolean };
-type Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number; jury_members: JuryMember[] };
+type Data = { tournament: string | null; participants: Participant[]; jury_total: number; jury_voted: number; jury_round: number | null; jury_members: JuryMember[] };
 export default function AdminOpeningProgress() {
   const [data, setData] = useState<Data | null>(null);
   const [filter, setFilter] = useState('all');
@@ -19,7 +19,14 @@ export default function AdminOpeningProgress() {
     } catch (e) { setError(e instanceof Error ? e.message : 'Connexion impossible.'); }
     finally { setBusy(false); }
   }, []);
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => {
+    load();
+    const timer = window.setInterval(load, 10000);
+    const refreshOnFocus = () => { if (document.visibilityState === 'visible') load(); };
+    window.addEventListener('focus', refreshOnFocus);
+    document.addEventListener('visibilitychange', refreshOnFocus);
+    return () => { window.clearInterval(timer); window.removeEventListener('focus', refreshOnFocus); document.removeEventListener('visibilitychange', refreshOnFocus); };
+  }, [load]);
   const shown = useMemo(() => (data?.participants || []).filter(p => filter === 'all' || (filter === 'none' ? p.openings_count === 0 : filter === 'one' ? p.openings_count === 1 : filter === 'two' ? p.openings_count === 2 : p.openings_count === 3)), [data, filter]);
   const totals = useMemo(() => [0,1,2,3].map(n => (data?.participants || []).filter(p => p.openings_count === n).length), [data]);
   return <section className="adm">
@@ -27,12 +34,12 @@ export default function AdminOpeningProgress() {
     {data?.tournament && <p className="muted">Tournoi : <b>{data.tournament}</b></p>}
     {!data?.tournament && data && <p className="muted">Aucun tournoi en préparation ou en cours.</p>}
     {data && <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(105px,1fr))',gap:8,marginBottom:14}}>
-      <div style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>Jury ayant voté</div><b style={{fontSize:24}}>{data.jury_voted}/{data.jury_total}</b><div className="muted" style={{fontSize:11}}>Membres distincts</div></div>
+      <div style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>Jury ayant voté {data.jury_round ? `— Tour ${data.jury_round}` : ""}</div><b style={{fontSize:24}}>{data.jury_voted}/{data.jury_total}</b><div className="muted" style={{fontSize:11}}>Membres distincts du tour actuel</div></div>
       {['Aucun','1 opening','2 openings','3 openings'].map((label,n)=><div key={label} style={{border:'1px solid var(--line,#333)',borderRadius:10,padding:10}}><div className="muted" style={{fontSize:12}}>{label}</div><b style={{fontSize:24}}>{totals[n]}</b></div>)}
     </div>}
     {data && <div style={{border:'1px solid var(--line,#333)',borderRadius:12,padding:12,marginBottom:16}}>
-      <h3 style={{margin:'0 0 10px'}}>Suivi des votes du jury</h3>
-      <p className="muted" style={{margin:'0 0 10px',fontSize:13}}>Les membres ci-dessous n’ont encore enregistré aucun vote dans ce tournoi.</p>
+      <h3 style={{margin:'0 0 10px'}}>Suivi des votes du jury {data.jury_round ? `— Tour ${data.jury_round}` : ""}</h3>
+      <p className="muted" style={{margin:'0 0 10px',fontSize:13}}>La liste est réinitialisée automatiquement au début d’un nouveau tour. Actualisation automatique toutes les 10 secondes.</p>
       {data.jury_members.filter(j => !j.has_voted).length === 0
         ? <p style={{margin:0}}>✓ Tous les membres du jury ont déjà voté.</p>
         : <ul style={{margin:0,paddingLeft:20}}>{data.jury_members.filter(j => !j.has_voted).map(j => <li key={j.pseudo} style={{padding:'4px 0',fontWeight:600}}>{j.pseudo} <span style={{color:'#f59e0b',fontWeight:400,fontSize:12}}>— N’a pas encore voté</span></li>)}</ul>}

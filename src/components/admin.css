@@ -11,3 +11,7 @@
 .chip.participant{color:var(--a);border-color:var(--a)}.chip.voter{color:var(--b);border-color:var(--b)}.chip.jury{color:var(--gold);border-color:var(--gold)}
 .who{grid-column:1;color:var(--muted);font-size:.9rem}.who b{color:var(--paper)}
 .ghost{background:transparent;color:var(--paper);border:1px solid var(--line);padding:.5rem .8rem;font-size:.85rem}.codes .ghost{grid-column:2;grid-row:1 / span 2}.ghost.out{margin-top:.5rem}
+
+.adm .admin-code-confirm{display:grid;gap:.35rem;margin:.6rem 0;color:var(--gold);font-size:.9rem}
+.adm .admin-code-confirm input{width:100%;box-sizing:border-box;padding:.7rem .8rem;background:var(--night);color:var(--paper);border:1px solid var(--gold);border-radius:8px;letter-spacing:.08em}
+.codes .delete-code{grid-column:2;grid-row:3}

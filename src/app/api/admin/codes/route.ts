@@ -8,10 +8,10 @@ export async function GET() {
 export async function POST(req: Request) {
   const id = await adminId(); if (!id) return Response.json({}, { status: 403 });
   const { role, count } = await req.json();
-  const allowed = ['participant', 'voter', 'jury'];
+  const allowed = ['admin', 'participant', 'voter', 'jury'];
   const amount = Number(count);
   if (!allowed.includes(role)) {
-    return Response.json({ error: 'Rôle non autorisé. Tu peux générer des codes Participant, Votant ou Jury. Les codes Admin sont protégés.' }, { status: 400 });
+    return Response.json({ error: 'Rôle invalide. Choisis Admin, Participant, Votant ou Jury.' }, { status: 400 });
   }
   if (!Number.isInteger(amount) || amount < 1 || amount > 60) {
     return Response.json({ error: 'Le nombre de codes doit être compris entre 1 et 60.' }, { status: 400 });
@@ -20,7 +20,11 @@ export async function POST(req: Request) {
     return Response.json({ codes: await rpc<string[]>('app_gen_codes', { p_admin_id: id, p_role: role, p_count: amount }) });
   } catch (e) {
     console.error('Génération des codes impossible:', e);
-    return Response.json({ error: 'La génération a échoué. Vérifie les droits administrateur et réessaie.' }, { status: 400 });
+    const message = e instanceof Error ? e.message : '';
+    if (message.includes('Admin requis')) {
+      return Response.json({ error: 'Session administrateur non reconnue. Reconnecte-toi avec un code Admin actif.' }, { status: 403 });
+    }
+    return Response.json({ error: 'La base de données a refusé la génération. Consulte les journaux administrateur pour le détail.' }, { status: 400 });
   }
 }
 export async function PATCH(req: Request) {

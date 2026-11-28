@@ -8,8 +8,20 @@ export async function GET() {
 export async function POST(req: Request) {
   const id = await adminId(); if (!id) return Response.json({}, { status: 403 });
   const { role, count } = await req.json();
-  try { return Response.json({ codes: await rpc<string[]>('app_gen_codes', { p_admin_id: id, p_role: role, p_count: Number(count) || 1 }) }); }
-  catch { return Response.json({ error: 'Rôle invalide' }, { status: 400 }); }
+  const allowed = ['participant', 'voter', 'jury'];
+  const amount = Number(count);
+  if (!allowed.includes(role)) {
+    return Response.json({ error: 'Rôle non autorisé. Tu peux générer des codes Participant, Votant ou Jury. Les codes Admin sont protégés.' }, { status: 400 });
+  }
+  if (!Number.isInteger(amount) || amount < 1 || amount > 60) {
+    return Response.json({ error: 'Le nombre de codes doit être compris entre 1 et 60.' }, { status: 400 });
+  }
+  try {
+    return Response.json({ codes: await rpc<string[]>('app_gen_codes', { p_admin_id: id, p_role: role, p_count: amount }) });
+  } catch (e) {
+    console.error('Génération des codes impossible:', e);
+    return Response.json({ error: 'La génération a échoué. Vérifie les droits administrateur et réessaie.' }, { status: 400 });
+  }
 }
 export async function PATCH(req: Request) {
   const id = await adminId(); if (!id) return Response.json({}, { status: 403 });

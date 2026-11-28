@@ -2,7 +2,7 @@
 import './admin.css';
 import { useCallback, useEffect, useState } from 'react';
 type C = { id: string; code: string; role: string; pseudo: string | null; active: boolean };
-const ROLES = [['participant', 'Participant'], ['voter', 'Votant'], ['jury', 'Jury']] as const;
+const ROLES = [['admin', 'Admin'], ['participant', 'Participant'], ['voter', 'Votant'], ['jury', 'Jury']] as const;
 const FILTERS = [['all', 'Tous'], ['participant', 'Participants'], ['voter', 'Votants'], ['jury', 'Jurys'], ['admin', 'Admins']] as const;
 const LABEL: Record<string, string> = { admin: 'Admin', participant: 'Participant', voter: 'Votant', jury: 'Jury' };
 export default function AdminCodes() {
@@ -24,7 +24,7 @@ export default function AdminCodes() {
   async function gen() {
     setBusy(true); setMsg('');
     try {
-      const r = await fetch('/api/admin/codes', { method: 'POST', body: JSON.stringify({ role, count }) });
+      const r = await fetch('/api/admin/codes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ role, count }) });
       const d = await r.json();
       if (d.codes) { setFresh(d.codes); load(); } else setMsg(d.error || 'Erreur.');
     } catch { setMsg('Connexion impossible.'); } finally { setBusy(false); }
@@ -33,7 +33,7 @@ export default function AdminCodes() {
     setBusyCode(c.id); setMsg('');
     setList(l => l.map(x => (x.id === c.id ? { ...x, active: !x.active } : x)));
     try {
-      const r = await fetch('/api/admin/codes', { method: 'PATCH', body: JSON.stringify({ id: c.id, active: !c.active }) });
+      const r = await fetch('/api/admin/codes', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: c.id, active: !c.active }) });
       if (!r.ok) throw new Error('Action refusée.');
       setMsg(c.active ? 'Code désactivé.' : 'Code réactivé.');
     } catch (e) {

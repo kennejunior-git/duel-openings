@@ -10,7 +10,7 @@ const LABEL: Record<string, string> = { admin: 'Admin', participant: 'Participan
 export default function AdminCodes() {
   const [list, setList] = useState<C[]>([]);
   const [role, setRole] = useState('participant');
-  const [count, setCount] = useState(5);
+  const [count, setCount] = useState('5');
   const [adminCode, setAdminCode] = useState('');
   const [fresh, setFresh] = useState<string[]>([]);
   const [filter, setFilter] = useState('all');
@@ -29,13 +29,18 @@ export default function AdminCodes() {
   useEffect(() => { load(); }, [load]);
 
   async function gen() {
+    const quantity = Number(count);
+    if (!Number.isInteger(quantity) || quantity < 1 || quantity > 60) {
+      setMsg('Entre un nombre compris entre 1 et 60.');
+      return;
+    }
     setBusy(true);
     setMsg('');
     try {
       const r = await fetch('/api/admin/codes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, count, ...(role === 'admin' ? { adminCode } : {}) })
+        body: JSON.stringify({ role, count: quantity, ...(role === 'admin' ? { adminCode } : {}) })
       });
       const d = await r.json();
       if (d.codes) {
@@ -103,7 +108,7 @@ export default function AdminCodes() {
         </label>
       )}
       <div className="row">
-        <label>Nombre de codes<input type="number" inputMode="numeric" min={1} max={60} value={count} onChange={e => setCount(Math.max(1, Math.min(60, Number(e.target.value) || 1)))} /></label>
+        <label>Nombre de codes<input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={2} value={count} onChange={e => setCount(e.target.value.replace(/\D/g, '').slice(0, 2))} onBlur={() => { const n = Number(count); setCount(String(!count || n < 1 ? 1 : Math.min(60, n))); }} /></label>
         <button type="button" className="go" onClick={gen} disabled={busy || (role === 'admin' && !adminCode.trim())}>{busy ? '…' : 'Générer'}</button>
       </div>
       {fresh.length > 0 && (

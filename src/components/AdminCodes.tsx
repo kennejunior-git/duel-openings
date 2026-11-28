@@ -125,7 +125,7 @@ export default function AdminCodes() {
       <ul className="codes">
         {shown.map(c => (
           <li key={c.id} className={c.active ? '' : 'off'}>
-            <div><code>{c.code}</code><span className={`chip ${c.role}`}>{LABEL[c.role]}</span></div>
+            <div className="code-line"><code>{c.code}</code><span className={`chip ${c.role}`}>{LABEL[c.role]}</span><button type="button" className="ghost copy-code" onClick={() => copy(c.code)}>Copier</button></div>
             <div className="who">{c.pseudo ? <b>{c.pseudo}</b> : c.used_at ? <b>{c.role === 'admin' ? 'Administration' : 'Connecté'}</b> : <em>En attente</em>}</div>
             {c.role !== 'admin' && <button type="button" className="ghost" onClick={() => toggle(c)} disabled={busyCode === c.id}>{busyCode === c.id ? '…' : c.active ? 'Désactiver' : 'Activer'}</button>}
             {c.used_at === null && <button type="button" className="ghost delete-code" onClick={() => remove(c)} disabled={busyCode === c.id}>{busyCode === c.id ? '…' : 'Supprimer'}</button>}
